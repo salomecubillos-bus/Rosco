@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rosco de Semiología</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    color-scheme: light;
+    --bg: #FBF7FF;
+    --bg-2: #F3ECFF;
+    --ink: #3D3557;
+    --ink-soft: #6E6490;
+    --panel: #FFFFFF;
+    --border: #E3D9F7;
+    --accent: #B9A4F0;
+    --accent-strong: #8F74E0;
+    --peach: #FFD9B5;
+    --mint: #BFEAD1;
+    --mint-ink: #2E6B48;
+    --rose: #FBC9D4;
+    --rose-ink: #8A3B51;
+    --butter: #FDEBAE;
+    --butter-ink: #8A6D1D;
+    --sky: #C7E3FA;
+    --shadow: 0 10px 28px rgba(93,70,160,0.14);
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      color-scheme: dark;
+      --bg:#211B33; --bg-2:#2A2247; --ink:#F1ECFF; --ink-soft:#C3B8E6;
+      --panel:#2D2550; --border:#473B75; --accent:#A48EE8; --accent-strong:#B9A4F0;
+      --peach:#5C4630; --mint:#2B4A3A; --mint-ink:#9FE4BE; --rose:#4F2E3A; --rose-ink:#F3B5C5;
+      --butter:#4E4523; --butter-ink:#F3DE93; --sky:#2A3F55;
+      --shadow: 0 10px 28px rgba(0,0,0,0.4);
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --bg:#211B33; --bg-2:#2A2247; --ink:#F1ECFF; --ink-soft:#C3B8E6;
+    --panel:#2D2550; --border:#473B75; --accent:#A48EE8; --accent-strong:#B9A4F0;
+    --peach:#5C4630; --mint:#2B4A3A; --mint-ink:#9FE4BE; --rose:#4F2E3A; --rose-ink:#F3B5C5;
+    --butter:#4E4523; --butter-ink:#F3DE93; --sky:#2A3F55;
+    --shadow: 0 10px 28px rgba(0,0,0,0.4);
+  }
+  html,body{height:100%;}
+  body{
+    margin:0; background: radial-gradient(circle at 20% 10%, var(--bg-2), var(--bg) 60%);
+    color:var(--ink); font-family:'Nunito',sans-serif; min-height:100%;
+    display:flex; flex-direction:column; align-items:center;
+    padding: 28px 16px 40px;
+  }
+  h1{
+    font-family:'Baloo 2',sans-serif; font-weight:800; font-size: clamp(1.5rem, 4vw, 2.1rem);
+    margin: 4px 0 2px; text-align:center; letter-spacing:.2px;
+  }
+  .sub{ color:var(--ink-soft); font-size:.95rem; margin-bottom:22px; text-align:center; max-width:520px;}
+  .stage{ width:100%; max-width: 760px; }
+
+  /* Start screen */
+  .start-card{
+    background:var(--panel); border:1px solid var(--border); border-radius:26px;
+    padding: 30px 26px; box-shadow:var(--shadow); text-align:center;
+  }
+  .start-card p{ color:var(--ink-soft); line-height:1.55; margin: 10px auto 22px; max-width:440px;}
+  .pill-row{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-bottom:22px;}
+  .pill{ background:var(--bg-2); border:1px solid var(--border); border-radius:999px; padding:6px 14px; font-size:.85rem; color:var(--ink-soft); font-weight:700;}
+  button{ font-family:'Baloo 2',sans-serif; cursor:pointer; border:none; border-radius:16px; }
+  .btn-primary{
+    background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+    color:#fff; font-size:1.1rem; font-weight:700; padding:14px 34px; box-shadow: 0 8px 20px rgba(143,116,224,.35);
+    transition: transform .15s ease;
+  }
+  .btn-primary:hover{ transform: translateY(-2px); }
+  .btn-secondary{
+    background:var(--bg-2); color:var(--ink); font-weight:700; padding:12px 22px; font-size:.95rem; border:1px solid var(--border);
+  }
+  .btn-ghost{ background:transparent; color:var(--ink-soft); font-weight:700; padding:10px 16px; font-size:.9rem; text-decoration:underline;}
+
+  /* Game layout */
+  .game-wrap{ display:flex; flex-direction:column; align-items:center; gap:18px; }
+  .hud{ display:flex; width:100%; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;}
+  .hud-chip{ background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:8px 16px; font-weight:800; font-family:'Baloo 2',sans-serif; box-shadow: 0 4px 10px rgba(93,70,160,.08); font-size:.95rem;}
+  .hud-chip.timer{ color:var(--accent-strong); }
+  .hud-chip.score{ color:var(--mint-ink); }
+  .hud-chip.wrongct{ color:var(--rose-ink); }
+
+  .rosco-area{ position:relative; width: min(94vw, 480px); aspect-ratio:1/1; margin: 4px auto 0;}
+  .letter-bubble{
+    position:absolute; width: 40px; height:40px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Baloo 2',sans-serif; font-weight:700; font-size:1rem;
+    background:var(--bg-2); color:var(--ink-soft); border:2px solid var(--border);
+    transition: all .25s ease; user-select:none;
+  }
+  .letter-bubble.current{ background:var(--peach); color:#8A5A1E; border-color:#E8B373; transform: scale(1.18); box-shadow:0 6px 14px rgba(232,179,115,.5); }
+  .letter-bubble.correct{ background:var(--mint); color:var(--mint-ink); border-color:var(--mint-ink); }
+  .letter-bubble.wrong{ background:var(--rose); color:var(--rose-ink); border-color:var(--rose-ink); }
+  .letter-bubble.skipped{ background:var(--butter); color:var(--butter-ink); border-color:var(--butter-ink); }
+
+  .center-panel{
+    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+    width: 72%; background:var(--panel); border-radius:22px; border:1px solid var(--border);
+    box-shadow:var(--shadow); padding: 18px; text-align:center; display:flex; flex-direction:column; gap:10px; align-items:center;
+  }
+  .big-letter{
+    width:46px; height:46px; border-radius:50%; background:var(--sky); color:#2A5C82;
+    display:flex; align-items:center; justify-content:center; font-family:'Baloo 2',sans-serif; font-weight:800; font-size:1.3rem;
+  }
+  .clue{ font-size: clamp(.78rem, 2.1vw, .95rem); line-height:1.4; color:var(--ink); min-height: 48px; }
+  .hint-label{ font-size:.72rem; color:var(--ink-soft); font-weight:700;}
+  .answer-form{ display:flex; gap:6px; width:100%; }
+  input[type=text]{
+    flex:1; min-width:0; border-radius:12px; border:1.5px solid var(--border); padding:9px 12px;
+    font-family:'Nunito',sans-serif; font-size:.9rem; background:var(--bg); color:var(--ink);
+  }
+  input[type=text]:focus{ outline:2px solid var(--accent); outline-offset:1px; }
+  .mini-btn{ font-family:'Nunito',sans-serif; font-weight:800; font-size:.82rem; padding:9px 14px; border-radius:12px; }
+  .mini-btn.ok{ background:var(--mint); color:var(--mint-ink); }
+  .mini-btn.skip{ background:var(--butter); color:var(--butter-ink); }
+  .feedback{ font-size:.82rem; font-weight:700; min-height: 18px; }
+  .feedback.ok{ color:var(--mint-ink); }
+  .feedback.bad{ color:var(--rose-ink); }
+
+  /* End screen */
+  .end-card{ background:var(--panel); border:1px solid var(--border); border-radius:26px; padding:28px 24px; box-shadow:var(--shadow); width:100%; max-width:600px; text-align:center;}
+  .end-score{ font-family:'Baloo 2',sans-serif; font-size:2.4rem; font-weight:800; color:var(--accent-strong); margin:6px 0 2px;}
+  .review-list{ text-align:left; margin-top:18px; display:flex; flex-direction:column; gap:10px; max-height:360px; overflow-y:auto; padding-right:4px; }
+  .review-item{ background:var(--bg-2); border-radius:14px; padding:10px 14px; font-size:.85rem; border-left:4px solid var(--rose-ink); }
+  .review-item b{ font-family:'Baloo 2',sans-serif; color:var(--ink); }
+  .end-actions{ margin-top:22px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;}
+  .hidden{ display:none !important; }
+  footer{ margin-top:28px; color:var(--ink-soft); font-size:.78rem; text-align:center; }
+</style>
+</head>
+<body>
+
+<h1>🩺 Rosco de Semiología</h1>
+<p class="sub">Repasa términos semiológicos clásicos, letra por letra. Si no sabes una, di "pasapalabra" y vuelve más tarde.</p>
+
+<div class="stage">
+
+  <!-- START -->
+  <div id="screen-start" class="start-card">
+    <p>26 letras, 26 conceptos de semiología médica. Tienes <b>2:30 minutos</b> para completar el rosco. Una respuesta incorrecta no te elimina: verás la definición correcta y seguirás jugando.</p>
+    <div class="pill-row">
+      <span class="pill">🟢 Correcta</span>
+      <span class="pill">🔴 Incorrecta</span>
+      <span class="pill">🟡 Pasapalabra</span>
+    </div>
+    <button class="btn-primary" id="btn-start">Comenzar rosco</button>
+  </div>
+
+  <!-- GAME -->
+  <div id="screen-game" class="game-wrap hidden">
+    <div class="hud">
+      <div class="hud-chip timer">⏱ <span id="timer-display">2:30</span></div>
+      <div class="hud-chip score">✔ <span id="score-display">0</span></div>
+      <div class="hud-chip wrongct">✘ <span id="wrong-display">0</span></div>
+    </div>
+
+    <div class="rosco-area" id="rosco-area">
+      <div class="center-panel">
+        <div class="big-letter" id="current-letter">A</div>
+        <div class="clue" id="current-clue">Cargando...</div>
+        <div class="hint-label" id="current-hint"></div>
+        <form class="answer-form" id="answer-form" autocomplete="off">
+          <input type="text" id="answer-input" placeholder="Escribe tu respuesta..." autocomplete="off">
+          <button type="submit" class="mini-btn ok">Responder</button>
+        </form>
+        <button type="button" class="mini-btn skip" id="btn-skip">Pasapalabra</button>
+        <div class="feedback" id="feedback"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- END -->
+  <div id="screen-end" class="end-card hidden">
+    <div style="font-family:'Baloo 2',sans-serif;font-weight:700;color:var(--ink-soft);">¡Rosco terminado!</div>
+    <div class="end-score" id="final-score">0 / 26</div>
+    <div id="final-msg" style="color:var(--ink-soft);font-size:.9rem;"></div>
+    <div class="review-list" id="review-list"></div>
+    <div class="end-actions">
+      <button class="btn-secondary" id="btn-restart">Jugar de nuevo</button>
+    </div>
+  </div>
+
+</div>
+
+<footer>Hecho para repasar semiología · colores pastel, sin estrés 💜</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  const TERMS = [
+    {l:"A", clue:"Técnica de exploración física que consiste en escuchar los sonidos producidos por el cuerpo, generalmente con un estetoscopio.", a:"Auscultación"},
+    {l:"B", clue:"Frecuencia cardíaca menor a 60 latidos por minuto.", a:"Bradicardia"},
+    {l:"C", clue:"Coloración azulada de la piel y las mucosas por aumento de la hemoglobina desoxigenada.", a:"Cianosis"},
+    {l:"D", clue:"Sensación subjetiva de dificultad para respirar.", a:"Disnea"},
+    {l:"E", clue:"Acumulación anormal de líquido en el espacio intersticial.", a:"Edema"},
+    {l:"F", clue:"Depresión que queda en la piel al presionar sobre un edema; también llamada signo del godet.", a:"Fóvea"},
+    {l:"G", clue:"Ritmo cardíaco a tres tiempos por la presencia de un tercer o cuarto ruido audible.", a:"Galope"},
+    {l:"H", clue:"Aumento del tamaño del hígado por encima de lo normal.", a:"Hepatomegalia"},
+    {l:"I", clue:"Coloración amarillenta de la piel y las mucosas por aumento de la bilirrubina.", a:"Ictericia"},
+    {l:"J", clue:"Lesiones maculares, eritematosas y no dolorosas en palmas y plantas, asociadas a endocarditis infecciosa.", a:"Janeway", hint:"lesiones de ___"},
+    {l:"K", clue:"Maniobra que evalúa irritación meníngea: dolor y resistencia al extender la rodilla con la cadera flexionada.", a:"Kernig", hint:"signo de ___"},
+    {l:"L", clue:"Aumento de tamaño o alteración de la consistencia de los ganglios linfáticos.", a:"Linfadenopatía"},
+    {l:"M", clue:"Ruido respiratorio normal producido por el paso del aire a través de los alvéolos.", a:"Murmullo vesicular"},
+    {l:"N", clue:"Movimiento involuntario, rítmico y oscilatorio de los ojos.", a:"Nistagmo"},
+    {l:"O", clue:"Disnea que aparece o empeora en decúbito dorsal y mejora al sentarse o pararse.", a:"Ortopnea"},
+    {l:"P", clue:"Técnica de exploración física que utiliza el sentido del tacto.", a:"Palpación"},
+    {l:"Q", clue:"Frecuencia cardíaca mayor a 100 latidos por minuto.", a:"Taquicardia", hint:"contiene la Q"},
+    {l:"R", clue:"Respuesta motora involuntaria provocada por un estímulo específico.", a:"Reflejo"},
+    {l:"S", clue:"Ruido cardíaco anormal producido por un flujo sanguíneo turbulento.", a:"Soplo"},
+    {l:"T", clue:"Aumento de la frecuencia respiratoria por encima de los valores normales.", a:"Taquipnea"},
+    {l:"U", clue:"Pérdida de sustancia de la piel o mucosa que compromete planos profundos.", a:"Úlcera"},
+    {l:"V", clue:"Lesión elemental de la piel, elevada y de contenido líquido, menor a 0.5 cm.", a:"Vesícula"},
+    {l:"W", clue:"Sibilancia audible producida por el paso de aire a través de una vía respiratoria estrechada.", a:"Wheezing", hint:"empieza con W"},
+    {l:"X", clue:"Lesión cutánea amarillenta producida por el depósito de lípidos.", a:"Xantoma"},
+    {l:"Y", clue:"Daño o alteración causada en el paciente a consecuencia de un acto médico.", a:"Yatrogenia"},
+    {l:"Z", clue:"Sensación auditiva de ruido o pitido sin un estímulo sonoro externo; también llamado acúfeno.", a:"Zumbido"}
+  ];
+
+  const TOTAL_TIME = 150; // 2:30
+  let queue = [];
+  let status = {}; // idx -> 'pending'|'correct'|'wrong'|'skipped'
+  let score = 0, wrongCount = 0;
+  let timeLeft = TOTAL_TIME;
+  let timerId = null;
+  let wrongLog = [];
+
+  const el = (id) => document.getElementById(id);
+  const screenStart = el('screen-start');
+  const screenGame = el('screen-game');
+  const screenEnd = el('screen-end');
+  const roscoArea = el('rosco-area');
+
+  function normalize(s){
+    return s.toLowerCase()
+      .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+      .replace(/[^a-z0-9\s]/g,"")
+      .trim().replace(/\s+/g," ");
+  }
+
+  function buildBubbles(){
+    // remove old bubbles (keep center panel)
+    [...roscoArea.querySelectorAll('.letter-bubble')].forEach(b=>b.remove());
+    const n = TERMS.length;
+    const size = roscoArea.getBoundingClientRect().width;
+    const radius = size * 0.44;
+    const center = size / 2;
+    TERMS.forEach((t, i)=>{
+      const angle = (i * (360/n) - 90) * Math.PI/180;
+      const x = center + radius * Math.cos(angle);
+      const y = center + radius * Math.sin(angle);
+      const b = document.createElement('div');
+      b.className = 'letter-bubble';
+      b.id = 'bubble-'+i;
+      b.textContent = t.l;
+      b.style.left = x + 'px';
+      b.style.top = y + 'px';
+      b.style.transform = 'translate(-50%,-50%)';
+      roscoArea.appendChild(b);
+    });
+  }
+
+  function resetGame(){
+    queue = TERMS.map((_,i)=>i);
+    status = {}; TERMS.forEach((_,i)=> status[i]='pending');
+    score = 0; wrongCount = 0; timeLeft = TOTAL_TIME; wrongLog = [];
+    el('score-display').textContent = '0';
+    el('wrong-display').textContent = '0';
+    updateTimerDisplay();
+  }
+
+  function updateTimerDisplay(){
+    const m = Math.floor(timeLeft/60);
+    const s = String(timeLeft%60).padStart(2,'0');
+    el('timer-display').textContent = m+':'+s;
+  }
+
+  function startTimer(){
+    clearInterval(timerId);
+    timerId = setInterval(()=>{
+      timeLeft--;
+      updateTimerDisplay();
+      if(timeLeft<=0){
+        clearInterval(timerId);
+        finishGame();
+      }
+    },1000);
+  }
+
+  function currentIdx(){ return queue.length ? queue[0] : null; }
+
+  function renderCurrent(){
+    const idx = currentIdx();
+    [...roscoArea.querySelectorAll('.letter-bubble')].forEach(b=>b.classList.remove('current'));
+    if(idx===null){ finishGame(); return; }
+    const t = TERMS[idx];
+    el('current-letter').textContent = t.l;
+    el('current-clue').textContent = t.clue;
+    el('current-hint').textContent = t.hint ? '('+t.hint+')' : '';
+    const bub = el('bubble-'+idx);
+    if(bub) bub.classList.add('current');
+    el('answer-input').value = '';
+    el('feedback').textContent = '';
+    el('feedback').className = 'feedback';
+    el('answer-input').focus();
+  }
+
+  function markBubble(idx, cls){
+    const b = el('bubble-'+idx);
+    if(!b) return;
+    b.classList.remove('current','correct','wrong','skipped');
+    b.classList.add(cls);
+  }
+
+  function submitAnswer(e){
+    e.preventDefault();
+    const idx = currentIdx();
+    if(idx===null) return;
+    const t = TERMS[idx];
+    const val = el('answer-input').value;
+    if(!val.trim()) return;
+    const ok = normalize(val) === normalize(t.a);
+    if(ok){
+      status[idx]='correct'; score++; el('score-display').textContent = score;
+      markBubble(idx,'correct');
+      el('feedback').textContent = '¡Correcto! ✓';
+      el('feedback').className = 'feedback ok';
+      queue.shift();
+      setTimeout(renderCurrent, 550);
+    } else {
+      status[idx]='wrong'; wrongCount++; el('wrong-display').textContent = wrongCount;
+      markBubble(idx,'wrong');
+      wrongLog.push({l:t.l, given:val, correct:t.a, clue:t.clue});
+      el('feedback').textContent = 'Incorrecto. Era: '+t.a;
+      el('feedback').className = 'feedback bad';
+      queue.shift();
+      setTimeout(renderCurrent, 1600);
+    }
+  }
+
+  function skipCurrent(){
+    const idx = currentIdx();
+    if(idx===null) return;
+    status[idx]='skipped';
+    markBubble(idx,'skipped');
+    queue.push(queue.shift());
+    renderCurrent();
+  }
+
+  function finishGame(){
+    clearInterval(timerId);
+    screenGame.classList.add('hidden');
+    screenEnd.classList.remove('hidden');
+    el('final-score').textContent = score + ' / ' + TERMS.length;
+    let msg = '';
+    if(score === TERMS.length) msg = '¡Rosco perfecto! Dominas la semiología 🎉';
+    else if(score >= TERMS.length*0.7) msg = 'Muy buen repaso, ya casi lo dominas.';
+    else if(score >= TERMS.length*0.4) msg = 'Buen intento, repasa los fallados abajo.';
+    else msg = 'Vale la pena repasar los apuntes y volver a intentarlo.';
+    el('final-msg').textContent = msg;
+
+    const list = el('review-list');
+    list.innerHTML = '';
+    if(wrongLog.length===0){
+      const p = document.createElement('div');
+      p.style.textAlign='center'; p.style.color='var(--ink-soft)'; p.style.fontSize='.85rem';
+      p.textContent = 'No fallaste ninguna definición 👏';
+      list.appendChild(p);
+    } else {
+      wrongLog.forEach(w=>{
+        const d = document.createElement('div');
+        d.className = 'review-item';
+        d.innerHTML = '<b>'+w.l+' — '+w.correct+'</b><br>'+w.clue;
+        list.appendChild(d);
+      });
+    }
+  }
+
+  el('btn-start').addEventListener('click', ()=>{
+    screenStart.classList.add('hidden');
+    screenGame.classList.remove('hidden');
+    resetGame();
+    requestAnimationFrame(()=>{ buildBubbles(); renderCurrent(); startTimer(); });
+  });
+
+  el('answer-form').addEventListener('submit', submitAnswer);
+  el('btn-skip').addEventListener('click', skipCurrent);
+
+  el('btn-restart').addEventListener('click', ()=>{
+    screenEnd.classList.add('hidden');
+    screenGame.classList.remove('hidden');
+    resetGame();
+    requestAnimationFrame(()=>{ buildBubbles(); renderCurrent(); startTimer(); });
+  });
+
+  window.addEventListener('resize', ()=>{
+    if(!screenGame.classList.contains('hidden')) buildBubbles();
+  });
+})();
+</script>
+</body>
+</html>
